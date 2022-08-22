@@ -16,7 +16,6 @@ use App\Invoice\InvoiceModel;
 
 abstract class AbstractCalculator
 {
-
     /**
      * @var SystemConfiguration
      */
