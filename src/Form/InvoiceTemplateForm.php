@@ -29,7 +29,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class InvoiceTemplateForm extends AbstractType
 {
-
     /**
      * @var SystemConfiguration
      */
