@@ -362,6 +362,13 @@ class SystemConfiguration implements SystemBundleConfiguration
         return $this->getIncrement('quick_entry.recent_activities', 5, 0) ?? 5;
     }
 
+    // ========== Invoice configurations ==========
+
+    public function isSmallBusinessRule(): bool
+    {
+        return (bool) $this->find('invoice.small_business_rule');
+    }
+
     // ========== Company configurations ==========
 
     public function getFinancialYearStart(): ?string

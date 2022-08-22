@@ -98,6 +98,7 @@
             {% endfor %}
             </tbody>
             <tfoot>
+                {% if not config('invoice.small_business_rule') %}
                 <tr>
                     <td colspan="4" class="text-right">
                         {{ 'invoice.subtotal'|trans }}
@@ -110,6 +111,7 @@
                     </td>
                     <td class="text-right">{{ model.calculator.tax|money(currency) }}</td>
                 </tr>
+                {% endif %}
                 <tr>
                     <td colspan="4" class="text-right text-nowrap">
                         <strong>{{ 'invoice.total'|trans }}</strong>
@@ -125,6 +127,12 @@
 
 <div class="row">
     <div class="col-xs-12">
+        {% if config('invoice.small_business_rule') %}
+        <div class="small-business-rule-note">
+            <p>{{ 'invoice.small_business_rule'|trans }}</p>
+        </div>
+        {% endif %}
+
         {% if model.template.paymentTerms is not empty %}
         <div contenteditable="true" class="paymentTerms">
             {{ model.template.paymentTerms|md2html }}

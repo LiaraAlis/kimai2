@@ -9,12 +9,19 @@
 
 namespace App\Invoice\Calculator;
 
+use App\Configuration\SystemConfiguration;
 use App\Invoice\CalculatorInterface;
 use App\Invoice\InvoiceItem;
 use App\Invoice\InvoiceModel;
 
 abstract class AbstractCalculator
 {
+
+    /**
+     * @var SystemConfiguration
+     */
+    private $systemConfiguration;
+
     /**
      * @var string
      */
@@ -24,6 +31,14 @@ abstract class AbstractCalculator
      * @var InvoiceModel
      */
     protected $model;
+
+    /**
+     * @param SystemConfiguration $systemConfiguration
+     */
+    public function __construct(SystemConfiguration $systemConfiguration)
+    {
+        $this->systemConfiguration = $systemConfiguration;
+    }
 
     /**
      * @return InvoiceItem[]
@@ -61,6 +76,10 @@ abstract class AbstractCalculator
      */
     public function getVat(): ?float
     {
+        if ($this->systemConfiguration->isSmallBusinessRule()) {
+            return 0.00;
+        }
+
         return $this->model->getTemplate()->getVat();
     }
 

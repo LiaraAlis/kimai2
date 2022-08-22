@@ -1012,6 +1012,10 @@
         <source>invoice.total</source>
         <target>Total</target>
       </trans-unit>
+      <trans-unit id="Iy3yAfD" resname="invoice.small_business_rule">
+        <source>invoice.small_business_rule</source>
+        <target>According to the German tax law § 19 UStG no sales tax is charged due to the small business regulation.</target>
+      </trans-unit>
       <trans-unit id="TPzFWUs" resname="invoice.service_date">
         <source>invoice.service_date</source>
         <target>Service date</target>

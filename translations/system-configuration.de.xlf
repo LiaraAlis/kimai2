@@ -230,6 +230,10 @@
         <source>label.simple_form</source>
         <target>Einfache Suche</target>
       </trans-unit>
+      <trans-unit id="Iy3yAfD" resname="label.small_business_rule">
+        <source>label.small_business_rule</source>
+        <target>Kleinunternehmerregelung gemäß § 19 UStG anwenden</target>
+      </trans-unit>
       <trans-unit id="HrEBLUr" resname="label.invoice.number_format">
         <source>label.invoice.number_format</source>
         <target>Rechnungsnummer Format</target>

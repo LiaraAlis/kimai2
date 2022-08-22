@@ -502,6 +502,12 @@ final class SystemConfigurationController extends AbstractController
                         ->setRequired(false)
                         ->setType(YesNoType::class)
                         ->setTranslationDomain('system-configuration'),
+                    (new Configuration())
+                        ->setName('invoice.small_business_rule')
+                        ->setLabel('small_business_rule')
+                        ->setRequired(false)
+                        ->setType(YesNoType::class)
+                        ->setTranslationDomain('system-configuration'),
                 ]),
             $authentication,
             (new SystemConfigurationModel('customer'))

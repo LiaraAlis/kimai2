@@ -9,6 +9,7 @@
 
 namespace App\Form;
 
+use App\Configuration\SystemConfiguration;
 use App\Entity\InvoiceTemplate;
 use App\Form\Type\InvoiceCalculatorType;
 use App\Form\Type\InvoiceNumberGeneratorType;
@@ -28,11 +29,28 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class InvoiceTemplateForm extends AbstractType
 {
+
+    /**
+     * @var SystemConfiguration
+     */
+    private $systemConfiguration;
+
+    /**
+     * @param SystemConfiguration $systemConfiguration
+     */
+    public function __construct(SystemConfiguration $systemConfiguration)
+    {
+        $this->systemConfiguration = $systemConfiguration;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $isSmallBusiness = $this->systemConfiguration->isSmallBusinessRule();
+        /** @var InvoiceTemplate $data */
+        $data = $options['data'];
         $builder
             ->add('name', TextType::class, [
                 'label' => 'label.name',
@@ -69,6 +87,8 @@ class InvoiceTemplateForm extends AbstractType
             ->add('vat', NumberType::class, [
                 'label' => 'label.tax_rate',
                 'scale' => 2,
+                'disabled' => $isSmallBusiness,
+                'data' => $isSmallBusiness ? 0.00 : $data->getVat(),
             ])
             ->add('renderer', InvoiceRendererType::class)
             ->add('calculator', InvoiceCalculatorType::class)

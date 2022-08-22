@@ -230,6 +230,10 @@
         <source>label.simple_form</source>
         <target>Simple search</target>
       </trans-unit>
+      <trans-unit id="Iy3yAfD" resname="label.small_business_rule">
+        <source>label.small_business_rule</source>
+        <target>Apply small business regulation according to the German tax law § 19 UStG</target>
+      </trans-unit>
       <trans-unit id="HrEBLUr" resname="label.invoice.number_format">
         <source>label.invoice.number_format</source>
         <target>Invoice number format</target>

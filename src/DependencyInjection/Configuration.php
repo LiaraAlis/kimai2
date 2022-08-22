@@ -314,6 +314,9 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('number_format')
                     ->defaultValue('{Y}/{cy,3}')
                 ->end()
+                ->scalarNode('small_business_rule')
+                    ->defaultValue(false)
+                ->end()
             ->end()
         ;
 

@@ -1012,6 +1012,11 @@
         <source>invoice.total</source>
         <target>Rechnungsendbetrag</target>
       </trans-unit>
+      <trans-unit id="Iy3yAfD" resname="invoice.small_business_rule">
+        <source>invoice.small_business_rule</source>
+        <target>Gemäß § 19 UStG wird aufgrund der Kleinunternehmerregelung keine Umsatzsteuer erhoben.
+</target>
+      </trans-unit>
       <trans-unit id="TPzFWUs" resname="invoice.service_date">
         <source>invoice.service_date</source>
         <target>Leistungsdatum</target>
