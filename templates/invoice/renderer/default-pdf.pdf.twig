@@ -6,14 +6,19 @@
 {% set project = model.query.project %}
 <html lang="{{ language }}">
 <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}{{ model.invoiceNumber }}-{{ model.customer.company|default(model.customer.name)|u.snake }}{% endblock %}</title>
-    <style>
-        {{ encore_entry_css_source('invoice-pdf')|raw }}
-    </style>
+    {% block head %}
+        <meta charset="UTF-8">
+        <title>{% block title %}{{ model.invoiceNumber }}-{{ model.customer.company|default(model.customer.name)|u.snake }}{% endblock %}</title>
+        {% block styles %}
+        <style>
+            {{ encore_entry_css_source('invoice-pdf')|raw }}
+        </style>
+        {% endblock %}
+    {% endblock %}
 </head>
 <body>
 <!--mpdf
+{% block pdf_header %}
 <htmlpageheader name="header">
     <table class="header">
         <tr>
@@ -27,6 +32,9 @@
     </table>
 </htmlpageheader>
 <sethtmlpageheader name="header" page="ALL" value="on" show-this-page="1" />
+{% endblock %}
+
+{% block pdf_footer %}
 <htmlpagefooter name="footer">
     <table class="footer">
         <tr>
@@ -44,7 +52,13 @@
     </table>
 </htmlpagefooter>
 <sethtmlpagefooter page="ALL" value="on" name="footer" show-this-page="1" />
+{% endblock %}
 mpdf-->
+
+{% block body_start %}{% endblock %}
+{% block wrapper %}
+<div class="wrapper">
+    {% block addresses %}
     <table class="addresses">
         <tr>
             <td style="width:60%">
@@ -72,7 +86,9 @@ mpdf-->
             </td>
         </tr>
     </table>
+    {% endblock %}
 
+    {% block invoice_details %}
     <p>
         {{ 'invoice.number'|trans }}:
         {{ model.invoiceNumber }}
@@ -93,22 +109,32 @@ mpdf-->
             {{ project.orderNumber }}
         {% endif %}
     </p>
+    {% endblock %}
 
+    {% block invoice_text %}
     {% if model.customer.invoiceText is not empty%}
         <p>{{ model.customer.invoiceText|md2html }}</p>
     {% endif %}
+    {% endblock %}
 
+    {% block items %}
     <table class="items">
         <thead>
+            {% block items_head %}
             <tr>
+                {% block items_head_inner %}
                 <th class="first"><strong>{{ 'label.date'|trans }}</strong></th>
                 <th><strong>{{ 'label.description'|trans }}</strong></th>
+                {% block items_head_additional_columns %}{% endblock %}
                 <th class="text-right"><strong>{{ 'label.unit_price'|trans }}</strong></th>
                 <th class="text-right"><strong>{{ 'label.amount'|trans }}</strong></th>
                 <th class="last text-right"><strong>{{ 'label.total_rate'|trans }}</strong></th>
+                {% endblock %}
             </tr>
+            {% endblock %}
         </thead>
         <tbody>
+        {% block items_body %}
         {% for id, entry in model.calculator.entries %}
             <!-- CONTENT_PART -->
             {% set duration = entry.duration|duration(isDecimal) %}
@@ -118,7 +144,9 @@ mpdf-->
             {% else %}
                 {% set rate = entry.hourlyRate %}
             {% endif %}
+            {% block items_body_entry_row %}
             <tr>
+                {% block items_body_entry_row_inner %}
                 <td nowrap class="first text-nowrap">{{ entry.begin|date_short }}</td>
                 <td contenteditable="true">
                     {% if entry.description is not empty %}
@@ -127,25 +155,37 @@ mpdf-->
                         {% if entry.activity is not null %}{{ entry.activity.name }} / {% endif %}{{ entry.project.name }}
                     {% endif %}
                 </td>
+                {% block items_body_additional_columns %}{% endblock %}
                 <td nowrap class="text-nowrap text-right">{{ rate|money(currency) }}</td>
                 <td nowrap class="text-nowrap text-right">{{ duration }}</td>
                 <td nowrap class="last text-nowrap text-right">{{ entry.rate|money(currency) }}</td>
+                {% endblock %}
             </tr>
+            {% endblock %}
         {% endfor %}
+        {% endblock %}
         </tbody>
         <tfoot>
+        {% block items_foot %}
+            {% if model.calculator.tax > 0 %}
+            {% block items_foot_subtotal %}
             <tr>
                 <td colspan="4" class="text-right">
                     {{ 'invoice.subtotal'|trans }}
                 </td>
                 <td class="last text-right">{{ model.calculator.subtotal|money(currency) }}</td>
             </tr>
+            {% endblock %}
+            {% block items_foot_tax %}
             <tr>
                 <td colspan="4" class="text-right">
                     {{ 'invoice.tax'|trans }} ({{ model.calculator.vat }}%)
                 </td>
                 <td class="last text-right">{{ model.calculator.tax|money(currency) }}</td>
             </tr>
+            {% endblock %}
+            {% endif %}
+            {% block items_foot_total %}
             <tr>
                 <td colspan="4" class="text-right text-nowrap">
                     <strong>{{ 'invoice.total'|trans }}</strong>
@@ -154,13 +194,21 @@ mpdf-->
                     <strong>{{ model.calculator.total|money(currency) }}</strong>
                 </td>
             </tr>
+            {% endblock %}
+        {% endblock %}
         </tfoot>
     </table>
+    {% endblock %}
 
+    {% block payment_terms %}
     {% if model.template.paymentTerms is not empty %}
     <div class="paymentTerms">
         {{ model.template.paymentTerms|md2html }}
     </div>
     {% endif %}
+    {% endblock %}
+</div>
+{% endblock %}
+{% block body_end %}{% endblock %}
 </body>
 </html>

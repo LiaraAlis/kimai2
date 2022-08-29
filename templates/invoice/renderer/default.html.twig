@@ -6,15 +6,19 @@
 {% set project = model.query.project %}
 <div class="row">
     <div class="col-xs-12">
+        {% block page_header %}
         <h2 class="page-header">
             <span contenteditable="true">{{ model.template.title }}</span>
             <small class="pull-right">{{ 'label.date'|trans }}: {{ model.invoiceDate|date_short }}</small>
         </h2>
+        {% endblock %}
     </div>
 </div>
 
+{% block addresses %}
 <div class="row">
     <div class="col-sm-5">
+        {% block address_recipient %}
         {{ 'invoice.to'|trans }}
         <address contenteditable="true">
             <strong>{{ model.customer.company|default(model.customer.name) }}</strong><br>
@@ -32,9 +36,11 @@
                 {{ 'label.orderNumber'|trans }}: {{ project.orderNumber }}
             {% endif %}
         </address>
+        {% endblock %}
     </div>
     <div class="col-sm-2"></div>
     <div class="col-sm-5">
+        {% block address_sender %}
         {{ 'invoice.from'|trans }}
         <address contenteditable="true">
             <strong>{{ model.template.company }}</strong><br>
@@ -45,36 +51,46 @@
             {{ model.template.vatId }}
             {% endif %}
         </address>
+        {% endblock %}
     </div>
 </div>
+{% endblock %}
 
 <div class="row">
     <div class="col-sm-5">
+        {% block invoice_details %}
         <p contenteditable="true">
             <strong>{{ 'invoice.number'|trans }}:</strong>
             {{ model.invoiceNumber }}
-            
+
             <br>
             <strong>{{ 'invoice.due_days'|trans }}:</strong>
             {{ model.dueDate|date_short }}
         </p>
+        {% endblock %}
     </div>
     <div class="col-sm-7"></div>
 </div>
 
+{% block items %}
 <div class="row invoice-items">
     <div class="col-xs-12 table-responsive">
         <table class="table">
             <thead>
+                {% block items_head %}
                 <tr>
+                    {% block items_head_inner %}
                     <th>{{ 'label.date'|trans }}</th>
                     <th>{{ 'label.description'|trans }}</th>
                     <th class="text-end">{{ 'label.unit_price'|trans }}</th>
                     <th class="text-end">{{ 'label.amount'|trans }}</th>
                     <th class="text-end">{{ 'label.total_rate'|trans }}</th>
+                    {% endblock %}
                 </tr>
+                {% endblock %}
             </thead>
             <tbody>
+            {% block items_body %}
             {% for entry in model.calculator.entries %}
                 {% set duration = entry.duration|duration(isDecimal) %}
                 {% if entry.fixedRate %}
@@ -83,7 +99,10 @@
                 {% else %}
                     {% set rate = entry.hourlyRate %}
                 {% endif %}
+
+                {% block items_body_entry_row %}
                 <tr>
+                    {% block items_body_entry_row_inner %}
                     <td nowrap class="text-nowrap">{{ entry.begin|date_short }}</td>
                     <td contenteditable="true">
                         {% if entry.description is not empty %}
@@ -95,22 +114,33 @@
                     <td nowrap class="text-nowrap text-end">{{ rate|money(currency) }}</td>
                     <td nowrap class="text-nowrap text-end">{{ duration }}</td>
                     <td nowrap class="text-nowrap text-end">{{ entry.rate|money(currency) }}</td>
+                    {% endblock %}
                 </tr>
+                {% endblock %}
             {% endfor %}
+            {% endblock %}
             </tbody>
             <tfoot>
-                <tr>
-                    <td colspan="4" class="text-end">
-                        {{ 'invoice.subtotal'|trans }}
-                    </td>
-                    <td class="text-end">{{ model.calculator.subtotal|money(currency) }}</td>
-                </tr>
-                <tr>
-                    <td colspan="4" class="text-end">
-                        {{ 'invoice.tax'|trans }} ({{ model.calculator.vat }}%)
-                    </td>
-                    <td class="text-end">{{ model.calculator.tax|money(currency) }}</td>
-                </tr>
+            {% block items_foot %}
+                {% if model.calculator.tax > 0 %}
+                    {% block items_foot_subtotal %}
+                    <tr>
+                        <td colspan="4" class="text-end">
+                            {{ 'invoice.subtotal'|trans }}
+                        </td>
+                        <td class="text-end">{{ model.calculator.subtotal|money(currency) }}</td>
+                    </tr>
+                    {% endblock %}
+                    {% block items_foot_tax %}
+                    <tr>
+                        <td colspan="4" class="text-end">
+                            {{ 'invoice.tax'|trans }} ({{ model.calculator.vat }}%)
+                        </td>
+                        <td class="text-end">{{ model.calculator.tax|money(currency) }}</td>
+                    </tr>
+                    {% endblock %}
+                {% endif %}
+                {% block items_foot_total %}
                 <tr>
                     <td colspan="4" class="text-end text-nowrap">
                         <strong>{{ 'invoice.total'|trans }}</strong>
@@ -119,28 +149,39 @@
                         <strong>{{ model.calculator.total|money(currency) }}</strong>
                     </td>
                 </tr>
+                {% endblock %}
+            {% endblock %}
             </tfoot>
         </table>
     </div>
 </div>
+{% endblock %}
 
-<div class="row">
-    <div class="col-xs-12">
-        {% if model.template.paymentTerms is not empty %}
-        <div contenteditable="true" class="paymentTerms">
-            {{ model.template.paymentTerms|md2html }}
+    {% block bottom_notes %}
+    <div class="row">
+        <div class="col-xs-12">
+            {% block payment_terms %}
+            {% if model.template.paymentTerms is not empty %}
+            <div contenteditable="true" class="paymentTerms">
+                {{ model.template.paymentTerms|md2html }}
+            </div>
+            {% endif %}
+            {% endblock %}
         </div>
-        {% endif %}
     </div>
-</div>
+    {% endblock %}
 
-<footer class="footer">
-    <p>
-        <strong>{{ 'label.address'|trans }}</strong>: {{ model.template.company }} &ndash; {{ model.template.address|nl2str(' &ndash; ') }}
-        <br>
-        <strong>{{ 'label.invoice_bank_account'|trans }}</strong>: {{ model.template.paymentDetails|nl2str(' &ndash; ') }}
-        <br>
-        <strong>{{ 'label.contact'|trans }}</strong>: {{ model.template.contact|nl2str(' &ndash; ') }}
-    </p>
-</footer>
+    {% block footer %}
+    <footer class="footer">
+        {% block footer_inner %}
+        <p>
+            <strong>{{ 'label.address'|trans }}</strong>: {{ model.template.company }} &ndash; {{ model.template.address|nl2str(' &ndash; ') }}
+            <br>
+            <strong>{{ 'label.invoice_bank_account'|trans }}</strong>: {{ model.template.paymentDetails|nl2str(' &ndash; ') }}
+            <br>
+            <strong>{{ 'label.contact'|trans }}</strong>: {{ model.template.contact|nl2str(' &ndash; ') }}
+        </p>
+        {% endblock %}
+    </footer>
+    {% endblock %}
 {% endblock %}
